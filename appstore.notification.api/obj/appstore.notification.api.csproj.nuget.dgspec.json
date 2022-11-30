@@ -1,0 +1,86 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/naveenjangra/Downloads/appstore-server-notifications-v2-main/src/appstore.notification/appstore.notification.api/appstore.notification.api.csproj": {}
+  },
+  "projects": {
+    "/Users/naveenjangra/Downloads/appstore-server-notifications-v2-main/src/appstore.notification/appstore.notification.api/appstore.notification.api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/naveenjangra/Downloads/appstore-server-notifications-v2-main/src/appstore.notification/appstore.notification.api/appstore.notification.api.csproj",
+        "projectName": "appstore.notification.api",
+        "projectPath": "/Users/naveenjangra/Downloads/appstore-server-notifications-v2-main/src/appstore.notification/appstore.notification.api/appstore.notification.api.csproj",
+        "packagesPath": "/Users/naveenjangra/.nuget/packages/",
+        "outputPath": "/Users/naveenjangra/Downloads/appstore-server-notifications-v2-main/src/appstore.notification/appstore.notification.api/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/naveenjangra/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Microsoft.IdentityModel.Tokens": {
+              "target": "Package",
+              "version": "[6.25.0, )"
+            },
+            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
+              "target": "Package",
+              "version": "[1.17.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.4.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[6.25.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "ZqTctdc8fbuET8aRAlwWSTQbpJCd7X4srgxivi1LpM4=",
+  "Source": "appstore.notification.api",
+  "BasePath": "_content/appstore.notification.api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
