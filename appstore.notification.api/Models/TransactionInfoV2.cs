@@ -62,3 +62,10 @@ namespace appstore.notification.api.Models
         public long SignatureDate { get; set; }
     }
 }
+/*{ "transactionId":"2000000681256616","originalTransactionId":"2000000681256616",
+        "webOrderLineItemId":"2000000070326834","bundleId":"com.kableone.tveverywhere",
+        "productId":"kableone_year","subscriptionGroupIdentifier":"20793586",
+        "purchaseDate":1723196861000,"originalPurchaseDate":1723196862000,
+        "expiresDate":1723200461000,"quantity":1,"type":"Auto-Renewable Subscription",
+        "inAppOwnershipType":"PURCHASED","signedDate":1723200233325,"environment":
+        "Sandbox","transactionReason":"PURCHASE","storefront":"IND","storefrontId":"143467","price":4000000,"currency":"INR"}*/

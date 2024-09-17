@@ -13,8 +13,11 @@ namespace appstore.notification.api.Models
         [JsonProperty("notificationUUID")]
         public string NotificationUUID { get; set; }
 
-        [JsonProperty("notificationVersion")]
+        [JsonProperty("version")]
         public string NotificationVersion { get; set; }
+
+        [JsonProperty("signedDate")]
+        public long SignedDate { get; set; }
 
         [JsonProperty("data")]
         public NotificationV2Data Data { get; set; }

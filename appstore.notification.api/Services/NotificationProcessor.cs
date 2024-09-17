@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Xml.Linq;
 
 namespace appstore.notification.api.Services
 {
@@ -21,6 +22,7 @@ namespace appstore.notification.api.Services
         public void Process(AppleNotification notification)
         {
             var v2Notification = GetVerifiedDecodedData<NotificationV2>(notification.SignedPayload);
+
             if (v2Notification?.DecodedPayload?.Data == null || !v2Notification.IsValid)
             {
                 throw new ArgumentNullException($"{nameof(v2Notification.DecodedPayload.Data)} is null or is not valid");
@@ -88,25 +90,31 @@ namespace appstore.notification.api.Services
 
         private static bool VerifyToken(string token)
         {
+           // return true;
             try
             {
                 var handler = new JwtSecurityTokenHandler();
                 var jwtSecurityToken = handler.ReadJwtToken(token);
 
 
-                var x5cTry = jwtSecurityToken.Header.TryGetValue("x5c", out object x5cCerteficates);
+                var x5cTry = jwtSecurityToken.Header.TryGetValue("x5c", out var x5cCerteficates);
+                var headerJson = JsonConvert.SerializeObject(jwtSecurityToken.Header);
+                var data = JsonConvert.DeserializeObject<JSonData>(headerJson);
                 if (!x5cTry || x5cCerteficates == null)
                 {
                     throw new KeyNotFoundException("Token Header does not contain x5c");
                 }
+                var certiticates = x5cCerteficates.ToString().Trim();
+                /*    var certeficatesItems = JsonConvert.DeserializeObject<IEnumerable<string>>(certiticates);
+                    IEnumerable<string> deserializedlistobj = (IEnumerable<string>)JsonConvert.DeserializeObject(certiticates, typeof(IEnumerable<string>));
+                    if (deserializedlistobj == null || !deserializedlistobj.Any())
+                    {
+                        throw new ArgumentNullException("Certeficates are null");
+                    }
 
-                var certeficatesItems = JsonConvert.DeserializeObject<IEnumerable<string>>(x5cCerteficates.ToString());
-                if (certeficatesItems == null || !certeficatesItems.Any())
-                {
-                    throw new ArgumentNullException("Certeficates are null");
-                }
 
-                var securityToken = Validate(handler, token, certeficatesItems.First());
+                    var securityToken = Validate(handler, token, deserializedlistobj.First());*/
+                var securityToken = Validate(handler, token, data.x5c.First());
 
                 return securityToken != null;
 
@@ -117,7 +125,11 @@ namespace appstore.notification.api.Services
                 return false;
             }
         }
-
+        public class JSonData
+        {
+            public string alg { get; set; }
+            public List<string> x5c { get; set; }
+        }
         private static SecurityToken? Validate(JwtSecurityTokenHandler tokenHandler, string jwtToken, string publicKey)
         {
             var certificateBytes = Base64UrlEncoder.DecodeBytes(publicKey);
@@ -145,6 +157,10 @@ namespace appstore.notification.api.Services
             var obj = JsonConvert.DeserializeObject<TObj>(decodedString);
             return obj;
         }
+
+    }
+    class HeaderData
+    {
 
     }
 }

@@ -29,5 +29,17 @@ namespace appstore.notification.api.Models
         [EnumMember(Value = "PENDING")] PENDING,
         
         [EnumMember(Value = "ACCEPTED")] ACCEPTED,
+        [EnumMember(Value = "FAILURE")] FAILURE,
+        [EnumMember(Value = "PRODUCT_NOT_FOR_SALE")] PRODUCT_NOT_FOR_SALE,
+
+        [EnumMember(Value = "SUMMARY")] SUMMARY,
+        [EnumMember(Value = "UNREPORTED")] UNREPORTED,
+        [EnumMember(Value = "")] EMPTY,
     }
 }
+
+
+
+
+
+

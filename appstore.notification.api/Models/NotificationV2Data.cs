@@ -21,5 +21,8 @@ namespace appstore.notification.api.Models
         
         [JsonProperty("signedTransactionInfo")]
         public string SignedTransactionInfo { get; set; }
+
+        [JsonProperty("status")]
+        public int Status { get; set; }
     }
 }
