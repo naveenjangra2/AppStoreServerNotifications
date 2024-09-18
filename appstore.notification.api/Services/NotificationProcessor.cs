@@ -6,7 +6,9 @@ using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Xml.Linq;
+using Apple.Receipt.Parser.Modules;
+using Apple.Receipt.Models;
+using Apple.Receipt.Parser.Services;
 
 namespace appstore.notification.api.Services
 {
@@ -41,6 +43,25 @@ namespace appstore.notification.api.Services
             
             // Update Internal subscription
             _subsciptionService.Update(v2Notification.DecodedPayload, renewalInfo, transactionInfo);
+        }
+        public void ReadReciept(AppleNotification notification, IAppleReceiptParserService parserService)
+        {
+            //string appleRootCertificate = "AppleIncRootCertificate.cer";
+            //string receiptData = notification.SignedPayload;
+
+            //AppleReceiptParser parser = new AppleReceiptParser(appleRootCertificate);
+            //AppleReceipt receipt = parser.ParseReceipt(receiptData);
+
+            //Console.WriteLine($"Transaction ID: {receipt.TransactionId}");
+            //Console.WriteLine($"Product ID: {receipt.ProductId}");
+            //Console.WriteLine($"Quantity: {receipt.Quantity}");
+            //Console.WriteLine($"Purchase Date: {receipt.PurchaseDate}");
+            string base64Receipt = notification.SignedPayload;
+            byte[] receiptData = Convert.FromBase64String(base64Receipt);
+
+            AppleAppReceipt? receipt = parserService.GetAppleReceiptFromBytes(receiptData); ;
+            Console.WriteLine(receipt?.ToString());
+            // ...
         }
 
         private VerifiedDecodedDataModel<TNotificationData> GetVerifiedDecodedData<TNotificationData>(string signedPayload)

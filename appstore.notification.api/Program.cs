@@ -1,5 +1,6 @@
 using appstore.notification.api.Interfaces;
 using appstore.notification.api.Services;
+using Apple.Receipt.Parser.Modules;
 
 namespace appstore.notification.api
 {
@@ -14,6 +15,7 @@ namespace appstore.notification.api
             builder.Services.AddSingleton<ISubsciptionService, SubsciptionService>();
             builder.Services.AddControllers();
             builder.Services.AddSwaggerGen();
+            builder.Services.RegisterAppleReceiptParser();
 
             var app = builder.Build();
 
