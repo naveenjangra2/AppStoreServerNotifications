@@ -9,6 +9,9 @@ using System.Text;
 using Apple.Receipt.Parser.Modules;
 using Apple.Receipt.Models;
 using Apple.Receipt.Parser.Services;
+using Newtonsoft.Json.Linq;
+using System.Net;
+using System.Security.Cryptography;
 
 namespace appstore.notification.api.Services
 {
@@ -46,22 +49,98 @@ namespace appstore.notification.api.Services
         }
         public void ReadReciept(AppleNotification notification, IAppleReceiptParserService parserService)
         {
-            //string appleRootCertificate = "AppleIncRootCertificate.cer";
-            //string receiptData = notification.SignedPayload;
-
-            //AppleReceiptParser parser = new AppleReceiptParser(appleRootCertificate);
-            //AppleReceipt receipt = parser.ParseReceipt(receiptData);
-
-            //Console.WriteLine($"Transaction ID: {receipt.TransactionId}");
-            //Console.WriteLine($"Product ID: {receipt.ProductId}");
-            //Console.WriteLine($"Quantity: {receipt.Quantity}");
-            //Console.WriteLine($"Purchase Date: {receipt.PurchaseDate}");
+           
             string base64Receipt = notification.SignedPayload;
             byte[] receiptData = Convert.FromBase64String(base64Receipt);
 
             AppleAppReceipt? receipt = parserService.GetAppleReceiptFromBytes(receiptData); ;
-            Console.WriteLine(receipt?.ToString());
+            if (receipt == null)  { return; }
+            var d = receipt.PurchaseReceipts.OrderByDescending(var => var.ExpirationDate).ToList();
+            var recipetModel = d.FirstOrDefault();
+            var recieptType = receipt.ReceiptType;
+            try
+            {
+                SignedTranscationData transactionData = ReadRecieptData(recieptType, recipetModel.TransactionId);
+                if (transactionData != null){
+
+                }
+            }
+            catch (Exception e) {
+                //save transaction id for error log
+            }
             // ...
+        }
+        private SignedTranscationData ReadRecieptData(String recieptType,String transactiodId)
+        {
+           
+            String url ;
+
+            if (recieptType == "Production") {
+                url = "https://api.storekit.itunes.apple.com/inApps/v1/transactions/" + transactiodId;
+            }
+            else
+            {
+                url = "https://api.storekit-sandbox.itunes.apple.com/inApps/v1/transactions/" + transactiodId;
+            }
+            
+            var request = WebRequest.Create(url);
+            request.Method = "GET";
+            request.Headers.Add("Authorization", "Bearer "+ GenerateInAppleToken());
+            var sendresponse = request.GetResponse();
+            using (var streamReader = new StreamReader(sendresponse.GetResponseStream()))
+            {
+                var sendresponsetext = streamReader.ReadToEnd().Trim();
+                var signedTransactionInfo = JsonConvert.DeserializeObject<SignedTransactionInfo>(sendresponsetext);
+                if (signedTransactionInfo != null && signedTransactionInfo.errorMessage == null)
+                {
+                    var transactionData = GetVerifiedDecodedData<SignedTranscationData>(signedTransactionInfo.SignedTransaction);
+
+                    if (transactionData?.DecodedPayload == null || !transactionData.IsValid)
+                    {
+                        throw new ArgumentNullException($"{nameof(transactionData.DecodedPayload)} is null or is not valid");
+                    }
+                    return transactionData.DecodedPayload;
+                     
+                }
+            }
+            return null;
+        }
+        public string GenerateInAppleToken()
+        {
+
+
+            try
+            {
+                const string iss = "f313d73d-160c-4b70-b9ad-5cf7c443b69b"; // your account's team ID found in the dev portal
+                const string aud = "appstoreconnect-v1";
+                const string sub = "com.kableone.tveverywhere"; // same as client_id
+                var now = DateTime.UtcNow;
+
+                // contents of your .p8 file
+                const string privateKey = "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgnCqUVtqjuNJ75ht1\n4OLP56L7HqURUF+QnK33czKpHgegCgYIKoZIzj0DAQehRANCAAThBNRHiBXbST4L\nBquWNhXXIYxXpRUOxIY2575GuMLIgt0si8oblYhjCST5t83RaKy8qLA/OEuJDmas\nbVVwUD22";
+                var ecdsa = ECDsa.Create();
+                ecdsa?.ImportPkcs8PrivateKey(Convert.FromBase64String(privateKey), out _);
+
+                var handler = new Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler();
+                var token = handler.CreateToken(new SecurityTokenDescriptor
+                {
+                    Issuer = iss,
+                    Audience = aud,
+
+                    Claims = new Dictionary<string, object> { { "bid", sub } },
+                    Expires = now.AddMinutes(20), // expiry can be a maximum of 6 months - generate one per request or re-use until expiration
+                    IssuedAt = now,
+                    NotBefore = now.AddMinutes(-1),
+                    SigningCredentials = new SigningCredentials(new ECDsaSecurityKey(ecdsa) { KeyId = "92W797DCPN" }, SecurityAlgorithms.EcdsaSha256)
+                });
+
+                return token;
+            }
+            catch (Exception EXC)
+            {
+               
+            }
+            return null;
         }
 
         private VerifiedDecodedDataModel<TNotificationData> GetVerifiedDecodedData<TNotificationData>(string signedPayload)
